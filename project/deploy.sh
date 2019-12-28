@@ -49,6 +49,8 @@ if [ ! -f "shaded-native-linux-x86_64/target/reactivemongo-shaded-native-$VERSIO
 fi
 
 JAVA_MODULES="shaded:reactivemongo-shaded shaded-native-osx-x86_64:reactivemongo-shaded-native:osx-x86-64 shaded-native-linux-x86_64:reactivemongo-shaded-native:linux-x86-64"
+SCALA_MODULES="alias:reactivemongo-alias"
+SCALA_VERSIONS="2.11 2.12 2.13"
 BASES=""
 
 for M in $JAVA_MODULES; do
@@ -61,6 +63,20 @@ for M in $JAVA_MODULES; do
   fi 
 
   BASES="$BASES $B/target/$N-$VERSION$V"
+done
+
+for V in $SCALA_VERSIONS; do
+    for M in $SCALA_MODULES; do
+        B=`echo "$M" | cut -d ':' -f 1`
+        SCALA_DIR="$B/target/scala-$V"
+
+        if [ ! -d "$SCALA_DIR" ]; then
+            echo "Skip Scala version $V for $M"
+        else
+            N=`echo "$M" | cut -d ':' -f 2`
+            BASES="$BASES $SCALA_DIR/$N"_$V-$VERSION
+        fi
+    done
 done
 
 for B in $BASES; do

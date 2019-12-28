@@ -16,6 +16,8 @@ object Shaded {
   lazy val commonModule = Project("ReactiveMongo-Shaded", file("shaded")).
     settings(
       Publish.settings ++ Seq(
+        crossPaths := false,
+        autoScalaLibrary := false,
         resolvers += Resolver.mavenLocal,
         libraryDependencies += "io.netty" % "netty-handler" % nettyVer,
         assemblyShadeRules in assembly := Seq(
@@ -37,6 +39,8 @@ object Shaded {
       file(s"shaded-native-${classifier}")).settings(
       Publish.settings ++ Seq(
         name := "ReactiveMongo-Shaded-Native",
+        crossPaths := false,
+        autoScalaLibrary := false,
         version := {
           val ver = (version in ThisBuild).value
           val verClassifier = classifier.replaceAll("_", "-")
