@@ -70,6 +70,10 @@ jobs:
       - checkout
       - setup_sbt
 
+      - restore_cache:
+          keys:
+          - scala-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.REACTIVEMONGO_SHADED }}-{{ checksum "build.sbt" }}-{{ checksum "project/Shaded.scala" }}
+
       - deploy:
           name: Publish artifacts to Sonatype Snapshots
           command: |
