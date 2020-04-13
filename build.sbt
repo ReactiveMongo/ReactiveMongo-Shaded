@@ -10,12 +10,11 @@ lazy val alias = project.in(file("alias")).
   settings(Publish.settings ++ Seq(
     name := "ReactiveMongo-Alias",
     description := "Library mappings (e.g. netty)",
-    scalaVersion := "2.12.10",
+    scalaVersion := "2.12.11",
     crossScalaVersions := {
       val scalaCompatVer = "2.11.12"
 
-      Seq(
-        "2.10.7", scalaCompatVer, scalaVersion.value, "2.13.1")
+      Seq(scalaCompatVer, scalaVersion.value, "2.13.1")
     },
     libraryDependencies ++= Seq(
       "io.netty" % "netty-handler" % "4.1.46.Final" % Provided))
