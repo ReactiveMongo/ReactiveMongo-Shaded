@@ -95,6 +95,18 @@ jobs:
                     
                     sbt +publish
 
+  trigger_dependent_builds:
+    docker:
+      - image: cimg/base:2020.01
+
+    working_directory: ~/repo
+
+    steps:
+      - run:
+          name: Trigger build @ ReactiveMongo-BSON
+          command: |
+                    curl -X POST "https://circleci.com/api/v1.1/project/github/ReactiveMongo/ReactiveMongo-BSON/build?circle-token=${REACTIVEMONGO_BSON_API_TOKEN}"
+
 workflows:
   version: 2
 
@@ -109,3 +121,11 @@ workflows:
                 - master
           requires:
             - jdk8
+
+      - trigger_dependent_builds:
+          filters:
+            branches:
+              only:
+                - master
+          requires:
+            - publish_snapshots
