@@ -74,6 +74,17 @@ jobs:
           keys:
           - scala-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.REACTIVEMONGO_SHADED }}-{{ checksum "build.sbt" }}-{{ checksum "project/Shaded.scala" }}
 
+      - run:
+          name: Update dependencies
+          command: sbt +update
+
+      - save_cache:
+          paths:
+            - ~/.ivy2
+            - ~/.coursier/cache
+            - ~/.sbt
+          key: scala-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.REACTIVEMONGO_SHADED }}-{{ checksum "build.sbt" }}-{{ checksum "project/Shaded.scala" }}
+
       - deploy:
           name: Publish artifacts to Sonatype Snapshots
           command: |
