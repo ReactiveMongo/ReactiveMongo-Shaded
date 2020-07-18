@@ -14,10 +14,10 @@ lazy val alias = project.in(file("alias")).
     crossScalaVersions := {
       val scalaCompatVer = "2.11.12"
 
-      Seq(scalaCompatVer, scalaVersion.value, "2.13.1")
+      Seq(scalaCompatVer, scalaVersion.value, "2.13.3")
     },
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-handler" % "4.1.46.Final" % Provided))
+      "io.netty" % "netty-handler" % "4.1.51.Final" % Provided))
   )
 
 lazy val shaded = project.in(file(".")).
