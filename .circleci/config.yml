@@ -97,7 +97,7 @@ jobs:
 
                     if [ `echo "$V" | grep -- '-SNAPSHOT' | wc -l` -eq 0 ]; then
                       echo "Cannot publish release $V"
-                      exit 1
+                      exit 0
                     fi
                     
                     export PUBLISH_REPO_NAME="Sonatype Nexus Repository Manager"
