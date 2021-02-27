@@ -12,7 +12,7 @@ lazy val alias = project.in(file("alias")).
     description := "Library mappings (e.g. netty)",
     scalaVersion := "2.12.12",
     crossScalaVersions := {
-      val scalaCompatVer = "2.11.12"
+      val scalaCompatVer = "2.13.5"
 
       Seq(scalaCompatVer, scalaVersion.value, "2.13.4")
     },
