@@ -39,6 +39,8 @@ object `package` {
 
   type ChannelPromise = c.ChannelPromise
 
+  trait ChannelDuplexHandler extends c.ChannelDuplexHandler
+
   type DefaultChannelId = c.DefaultChannelId
 
   object DefaultChannelId {
