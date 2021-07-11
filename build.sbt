@@ -10,14 +10,14 @@ lazy val alias = project.in(file("alias")).
   settings(Publish.settings ++ Seq(
     name := "ReactiveMongo-Alias",
     description := "Library mappings (e.g. netty)",
-    scalaVersion := "2.12.13",
+    scalaVersion := "2.12.14",
     crossScalaVersions := {
       val scalaCompatVer = "2.11.12"
 
-      Seq(scalaCompatVer, scalaVersion.value, "2.13.5")
+      Seq(scalaCompatVer, scalaVersion.value, "2.13.6")
     },
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-handler" % "4.1.63.Final" % Provided))
+      "io.netty" % "netty-handler" % "4.1.65.Final" % Provided))
   )
 
 lazy val shaded = project.in(file(".")).
