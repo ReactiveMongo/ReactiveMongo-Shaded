@@ -47,6 +47,8 @@ object `package` {
     @inline def newInstance() = c.DefaultChannelId.newInstance()
   }
 
+  type DefaultChannelPromise = c.DefaultChannelPromise
+
   type EventLoopGroup = c.EventLoopGroup
 }
 

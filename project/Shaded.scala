@@ -20,17 +20,17 @@ object Shaded {
         autoScalaLibrary := false,
         resolvers += Resolver.mavenLocal,
         libraryDependencies += "io.netty" % "netty-handler" % nettyVer,
-        assemblyShadeRules in assembly := Seq(
+        assembly / assemblyShadeRules := Seq(
           ShadeRule.rename("io.netty.**" -> "reactivemongo.io.netty.@1").inAll
         ),
-        assemblyMergeStrategy in assembly := {
+        assembly / assemblyMergeStrategy := {
           case "META-INF/io.netty.versions.properties" => MergeStrategy.last
-          case x => (assemblyMergeStrategy in assembly).value(x)
+          case x => (assembly / assemblyMergeStrategy).value(x)
         },
         pomPostProcess := transformPomDependencies(_ => None),
         makePom := makePom.dependsOn(assembly).value,
-        packageBin in Compile := target.value / (
-          assemblyJarName in assembly).value
+        Compile / packageBin := target.value / (
+          assembly / assemblyJarName).value
       )
     )
 
@@ -42,7 +42,7 @@ object Shaded {
         crossPaths := false,
         autoScalaLibrary := false,
         version := {
-          val ver = (version in ThisBuild).value
+          val ver = (ThisBuild / version).value
           val verClassifier = classifier.replaceAll("_", "-")
 
           if (ver endsWith "-SNAPSHOT") {
@@ -58,16 +58,16 @@ object Shaded {
             exclude("io.netty", "netty-transport")
             exclude("io.netty", "netty-buffer")
         ),
-        assemblyShadeRules in assembly := Seq(
+        assembly / assemblyShadeRules := Seq(
           ShadeRule.rename("io.netty.**" -> "reactivemongo.io.netty.@1").inAll
         ),
-        assemblyMergeStrategy in assembly := {
+        assembly / assemblyMergeStrategy := {
           case "META-INF/io.netty.versions.properties" => MergeStrategy.last
-          case x => (assemblyMergeStrategy in assembly).value(x)
+          case x => (assembly / assemblyMergeStrategy).value(x)
         },
         pomPostProcess := transformPomDependencies(_ => None),
         makePom := makePom.dependsOn(assembly).value,
-        packageBin in Compile := Def.task[File] {
+        Compile / packageBin := Def.task[File] {
           val dir = baseDirectory.value / "target" / (
             s"asm-${System.currentTimeMillis()}")
 
