@@ -23,6 +23,20 @@ package object buffer {
     @inline def wrappedBuffer(bytes: b.ByteBuf*) =
       b.Unpooled.wrappedBuffer(bytes: _*)
 
+    @inline def directBuffer(capacity: Int) =
+      b.Unpooled.directBuffer(capacity)
+
     @inline def EMPTY_BUFFER = b.Unpooled.EMPTY_BUFFER
+  }
+
+  type ByteBufInputStream = b.ByteBufInputStream
+
+  type ByteBufOutputStream = b.ByteBufOutputStream
+
+  type PooledByteBufAllocator = b.PooledByteBufAllocator
+
+  object PooledByteBufAllocator {
+    @inline def DEFAULT: PooledByteBufAllocator =
+      b.PooledByteBufAllocator.DEFAULT
   }
 }
