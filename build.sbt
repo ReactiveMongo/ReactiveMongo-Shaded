@@ -14,7 +14,7 @@ lazy val alias = project.in(file("alias")).
     crossScalaVersions := {
       val scalaCompatVer = "2.11.12"
 
-      Seq(scalaCompatVer, scalaVersion.value, "2.13.6")
+      Seq(scalaCompatVer, scalaVersion.value, "2.13.7")
     },
     libraryDependencies ++= Seq(
       "io.netty" % "netty-handler" % "4.1.66.Final" % Provided))
