@@ -48,7 +48,7 @@ fi
 
 JAVA_MODULES="shaded:reactivemongo-shaded shaded-native-osx-x86_64:reactivemongo-shaded-native:osx-x86-64 shaded-native-linux-x86_64:reactivemongo-shaded-native:linux-x86-64"
 SCALA_MODULES="alias:reactivemongo-alias"
-SCALA_VERSIONS="2.11 2.12 2.13"
+SCALA_VERSIONS="2.11 2.12 2.13 3.1.2-RC1-bin-20211222-c94b333-NIGHTLY"
 BASES=""
 
 for M in $JAVA_MODULES; do
@@ -64,6 +64,8 @@ for M in $JAVA_MODULES; do
 done
 
 for V in $SCALA_VERSIONS; do
+    MV=`echo "$V" | sed -e 's/^3.*/3/'`
+
     for M in $SCALA_MODULES; do
         B=`echo "$M" | cut -d ':' -f 1`
         SCALA_DIR="$B/target/scala-$V"
@@ -72,7 +74,7 @@ for V in $SCALA_VERSIONS; do
             echo "Skip Scala version $V for $M"
         else
             N=`echo "$M" | cut -d ':' -f 2`
-            BASES="$BASES $SCALA_DIR/$N"_$V-$VERSION
+            BASES="$BASES $SCALA_DIR/$N"_$MV-$VERSION
         fi
     done
 done
