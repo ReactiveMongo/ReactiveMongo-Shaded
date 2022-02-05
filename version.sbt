@@ -1,7 +1,7 @@
 ThisBuild / dynverVTagPrefix := false
 
 ThisBuild / version := {
-  val Stable = """([0-9]+)\.([0-9]+)\.([0-9]+)""".r
+  val Stable = """([0-9]+)\.([0-9]+)\.([0-9]+)(|-RC[0-9]+)""".r
 
   (ThisBuild / dynverGitDescribeOutput).value match {
     case Some(descr) => {
@@ -9,14 +9,12 @@ ThisBuild / version := {
         (ThisBuild / previousStableVersion).value match {
           case Some(previousVer) => {
             val current = (for {
-              Seq(maj, min, patch) <- Stable.unapplySeq(previousVer)
+              Seq(maj, min, patch, rc) <- Stable.unapplySeq(previousVer)
               nextPatch <- scala.util.Try(patch.toInt).map(_ + 1).toOption
             } yield {
-              s"${maj}.${min}.${nextPatch}-SNAPSHOT"
+              s"${maj}.${min}.${nextPatch}${rc}-SNAPSHOT"
             }).getOrElse {
-              println(
-                s"Fails to determine qualified snapshot version: $previousVer")
-
+              println("Fails to determine qualified snapshot version")
               previousVer
             }
 
