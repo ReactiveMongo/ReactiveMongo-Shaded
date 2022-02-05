@@ -48,7 +48,7 @@ fi
 
 JAVA_MODULES="shaded:reactivemongo-shaded shaded-native-osx-x86_64:reactivemongo-shaded-native:osx-x86-64 shaded-native-linux-x86_64:reactivemongo-shaded-native:linux-x86-64"
 SCALA_MODULES="alias:reactivemongo-alias"
-SCALA_VERSIONS="2.11 2.12 2.13 3.1.2-RC1-bin-20211222-c94b333-NIGHTLY"
+SCALA_VERSIONS="2.11 2.12 2.13 3.1.2-RC1"
 BASES=""
 
 for M in $JAVA_MODULES; do
