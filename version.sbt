@@ -11,8 +11,22 @@ ThisBuild / version := {
             val current = (for {
               Seq(maj, min, patch, rc) <- Stable.unapplySeq(previousVer)
               nextPatch <- scala.util.Try(patch.toInt).map(_ + 1).toOption
+              nextRc = {
+                if (rc startsWith "-RC") {
+                  scala.util.Try(rc.stripPrefix("-RC").toInt).
+                    map(_ + 1).toOption
+                } else {
+                  Option.empty[Int]
+                }
+              }
             } yield {
-              s"${maj}.${min}.${nextPatch}${rc}-SNAPSHOT"
+              nextRc match {
+                case Some(nrc) =>
+                  s"${maj}.${min}.${patch}-RC${nrc}-SNAPSHOT"
+
+                case _ =>
+                  s"${maj}.${min}.${nextPatch}-SNAPSHOT"
+              }
             }).getOrElse {
               println("Fails to determine qualified snapshot version")
               previousVer
