@@ -18,7 +18,7 @@ lazy val alias = project.in(file("alias")).
         scalaCompatVer,
         scalaVersion.value,
         "2.13.7",
-        "3.1.2-RC1"
+        "3.1.2"
       )
     },
     libraryDependencies ++= Seq(
