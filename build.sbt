@@ -22,7 +22,7 @@ lazy val alias = project.in(file("alias")).
       )
     },
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-handler" % "4.1.76.Final" % Provided))
+      "io.netty" % "netty-handler" % "4.1.77.Final" % Provided))
   )
 
 lazy val shaded = project.in(file(".")).
