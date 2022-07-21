@@ -18,11 +18,11 @@ lazy val alias = project.in(file("alias")).
         scalaCompatVer,
         scalaVersion.value,
         "2.13.8",
-        "3.1.3-RC2"
+        "3.1.3"
       )
     },
     libraryDependencies ++= Seq(
-      "io.netty" % "netty-handler" % "4.1.79.Final" % Provided))
+      "io.netty" % "netty-handler" % "4.1.76.Final" % Provided))
   )
 
 lazy val shaded = project.in(file(".")).
