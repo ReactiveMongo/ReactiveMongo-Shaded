@@ -38,19 +38,13 @@ object Shaded {
     Project(s"ReactiveMongo-Shaded-Native-${classifier}",
       file(s"shaded-native-${classifier}")).settings(
       Publish.settings ++ Seq(
-        name := "ReactiveMongo-Shaded-Native",
+        name := {
+          val c = classifier.replaceAll("_", "-")
+
+          s"reactivemongo-shaded-native-${c}"
+        },
         crossPaths := false,
         autoScalaLibrary := false,
-        version := {
-          val ver = (ThisBuild / version).value
-          val verClassifier = classifier.replaceAll("_", "-")
-
-          if (ver endsWith "-SNAPSHOT") {
-            s"${ver dropRight 9}-${verClassifier}-SNAPSHOT"
-          } else {
-            s"${ver}-${verClassifier}"
-          }
-        },
         resolvers += Resolver.mavenLocal,
         libraryDependencies ++= Seq(
           (("io.netty" % s"netty-transport-native-${nettyVariant}" % nettyVer).classifier(classifier)).

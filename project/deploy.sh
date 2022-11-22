@@ -42,13 +42,13 @@ ARCHES="x86_64 aarch_64"
 for OS in $OSES; do
   for ARCH in $ARCHES; do
     A=`echo "$ARCH" | sed -e 's/_/-/'`
-    V="${VERSION}-${OS}-${A}"
-    P="shaded-native-${OS}-${ARCH}"
-    JAR="${P}/target/reactivemongo-shaded-native-$V.jar"
+    P="shaded-native-${OS}-${A}"
+    TARGET="shaded-native-${OS}-${ARCH}/target"
+    JAR="${TARGET}/reactivemongo-$P-$VERSION.jar"
+    ASM="$TARGET/reactivemongo-${P}-assembly-$VERSION.jar"
 
-    if [ ! -f "$JAR" ]; then
-      mv "${P}/target/ReactiveMongo-Shaded-Native-assembly-$V.jar" \
-        "${P}/target/reactivemongo-shaded-native-$V.jar"
+    if [ -r "$ASM" ]; then
+      mv "$ASM" "$JAR"
     fi
   done
 done
@@ -61,7 +61,7 @@ for OS in $OSES; do
     A=`echo "$ARCH" | sed -e 's/_/-/'`
     V="${OS}-${A}"
     
-    JAVA_MODULES="$JAVA_MODULES shaded-native-${S}:reactivemongo-shaded-native:${V}"
+    JAVA_MODULES="$JAVA_MODULES shaded-native-${S}:reactivemongo-shaded-native-${V}"
   done
 done
 
@@ -72,13 +72,8 @@ BASES=""
 for M in $JAVA_MODULES; do
   B=`echo "$M" | cut -d ':' -f 1`
   N=`echo "$M" | cut -d ':' -f 2`
-  V=`echo "$M" | cut -d ':' -f 3`
 
-  if [ ! "x$V" = "x" ]; then
-    V="-$V"
-  fi 
-
-  BASES="$BASES $B/target/$N-$VERSION$V"
+  BASES="$BASES $B/target/$N-$VERSION"
 done
 
 for V in $SCALA_VERSIONS; do
