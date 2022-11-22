@@ -36,17 +36,35 @@ if [ ! -f "shaded/target/reactivemongo-shaded-$VERSION.jar" ]; then
   mv "shaded/target/ReactiveMongo-Shaded-Assembly-$VERSION.jar" "shaded/target/reactivemongo-shaded-$VERSION.jar"
 fi
 
-if [ ! -f "shaded-native-osx-x86_64/target/reactivemongo-shaded-native-$VERSION-osx-x86-64.jar" ]; then
-  mv "shaded-native-osx-x86_64/target/ReactiveMongo-Shaded-Native-assembly-$VERSION-osx-x86-64.jar" \
-     "shaded-native-osx-x86_64/target/reactivemongo-shaded-native-$VERSION-osx-x86-64.jar"
-fi
+OSES="osx linux"
+ARCHES="x86_64 aarch_64"
 
-if [ ! -f "shaded-native-linux-x86_64/target/reactivemongo-shaded-native-$VERSION-linux-x86-64.jar" ]; then
-  mv "shaded-native-linux-x86_64/target/ReactiveMongo-Shaded-Native-assembly-$VERSION-linux-x86-64.jar" \
-     "shaded-native-linux-x86_64/target/reactivemongo-shaded-native-$VERSION-linux-x86-64.jar"
-fi
+for OS in $OSES; do
+  for ARCH in $ARCHES; do
+    A=`echo "$ARCH" | sed -e 's/_/-/'`
+    V="${VERSION}-${OS}-${A}"
+    P="shaded-native-${OS}-${ARCH}"
+    JAR="${P}/target/reactivemongo-shaded-native-$V.jar"
 
-JAVA_MODULES="shaded:reactivemongo-shaded shaded-native-osx-x86_64:reactivemongo-shaded-native:osx-x86-64 shaded-native-linux-x86_64:reactivemongo-shaded-native:linux-x86-64"
+    if [ ! -f "$JAR" ]; then
+      mv "${P}/target/ReactiveMongo-Shaded-Native-assembly-$V.jar" \
+        "${P}/target/reactivemongo-shaded-native-$V.jar"
+    fi
+  done
+done
+
+JAVA_MODULES="shaded:reactivemongo-shaded"
+
+for OS in $OSES; do
+  for ARCH in $ARCHES; do
+    S="${OS}-${ARCH}"
+    A=`echo "$ARCH" | sed -e 's/_/-/'`
+    V="${OS}-${A}"
+    
+    JAVA_MODULES="$JAVA_MODULES shaded-native-${S}:reactivemongo-shaded-native:${V}"
+  done
+done
+
 SCALA_MODULES="alias:reactivemongo-alias"
 SCALA_VERSIONS="2.11 2.12 2.13 3.1.3"
 BASES=""
