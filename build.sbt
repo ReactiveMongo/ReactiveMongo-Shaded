@@ -22,7 +22,7 @@ lazy val alias = project.in(file("alias")).
         scalaCompatVer,
         scalaVersion.value,
         "2.13.10",
-        "3.2.1"
+        "3.2.2"
       )
     },
     libraryDependencies ++= Seq(

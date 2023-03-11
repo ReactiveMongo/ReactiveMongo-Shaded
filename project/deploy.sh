@@ -66,7 +66,7 @@ for OS in $OSES; do
 done
 
 SCALA_MODULES="alias:reactivemongo-alias"
-SCALA_VERSIONS="2.11 2.12 2.13 3.2.1"
+SCALA_VERSIONS="2.11 2.12 2.13 3.2.2"
 BASES=""
 
 for M in $JAVA_MODULES; do
