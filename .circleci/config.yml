@@ -31,7 +31,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-          - &scala_cache_key scala-{{ .Environment.CIRCLE_JOB }}-{{ .Environment.REACTIVEMONGO_SHADED }}-{{ checksum "build.sbt" }}-{{ checksum "project/Shaded.scala" }}
+          - &scala_cache_key scala-{{ .Environment.CIRCLE_JOB }}-{{ checksum "build.sbt" }}-{{ checksum "project/Shaded.scala" }}
 
       - run:
           name: Build & Run tests
