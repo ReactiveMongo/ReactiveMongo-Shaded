@@ -2,7 +2,7 @@
 
 V=`sbt 'show version' 2>&1 | tail -n 1 | cut -d ']' -f 2 | perl -pe 's/^[ \t]+//;s/[ \t]+$//'`
 
-if [ `echo "$V" | grep -- '-SNAPSHOT' | wc -l` -eq 0 ]; then
+if [ `echo "$V" | grep -E 'SNAPSHOT$' | wc -l` -eq 0 ]; then
   echo "Cannot publish release $V"
   exit 1
 fi
