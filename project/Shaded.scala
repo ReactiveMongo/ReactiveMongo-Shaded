@@ -11,7 +11,7 @@ import sbtassembly.{
 object Shaded {
   import XmlUtil.transformPomDependencies
 
-  val nettyVer = "4.1.115.Final"
+  val nettyVer = "4.1.116.Final"
 
   lazy val commonModule = Project("ReactiveMongo-Shaded", file("shaded")).
     settings(
