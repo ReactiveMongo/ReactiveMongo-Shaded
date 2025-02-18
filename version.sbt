@@ -6,7 +6,15 @@ ThisBuild / version := {
   (ThisBuild / dynverGitDescribeOutput).value match {
     case Some(descr) => {
       if ((ThisBuild / isSnapshot).value) {
-        (ThisBuild / previousStableVersion).value match {
+        val previous = descr.ref match {
+          case r @ sbtdynver.GitRef(tag) if r.isTag =>
+            Some(tag)
+
+          case _ =>
+            (ThisBuild / previousStableVersion).value
+        }
+
+        previous match {
           case Some(previousVer) => {
             val current = (for {
               Seq(maj, min, patch, rc) <- Stable.unapplySeq(previousVer)
@@ -24,7 +32,7 @@ ThisBuild / version := {
             } yield {
               nextRc match {
                 case Some(nrc) =>
-                  s"${maj}.${min}.${patch}-RC${nrc}-SNAPSHOT"
+                  s"${maj}.${min}.${patch}-RC${nrc}.SNAPSHOT"
 
                 case _ =>
                   s"${maj}.${min}.${nextPatch}-SNAPSHOT"
