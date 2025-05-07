@@ -11,7 +11,7 @@ import sbtassembly.{
 object Shaded {
   import XmlUtil.transformPomDependencies
 
-  val nettyVer = "4.2.0.Final"
+  val nettyVer = "4.2.1.Final"
 
   lazy val commonModule = Project("ReactiveMongo-Shaded", file("shaded")).
     settings(
@@ -19,7 +19,10 @@ object Shaded {
         crossPaths := false,
         autoScalaLibrary := false,
         resolvers += Resolver.mavenLocal,
-        libraryDependencies += "io.netty" % "netty-handler" % nettyVer,
+        libraryDependencies ++= Seq(
+          "io.netty" % "netty-handler" % nettyVer,
+          "io.netty" % "netty-codec-compression" % nettyVer
+        ),
         assembly / assemblyShadeRules := Seq(
           ShadeRule.rename("io.netty.**" -> "reactivemongo.io.netty.@1").inAll
         ),
@@ -90,7 +93,8 @@ object Shaded {
           }
 
           // New JAR
-          IO.zip(Path.contentOf(dir), assembly.value)
+          IO.zip(Path.contentOf(dir), assembly.value,
+            time = Some(System.currentTimeMillis()))
 
           assembly.value
         }.dependsOn(assembly).value
