@@ -2,7 +2,10 @@
 
 set -e
 
-REPO="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+# curl -D - -X POST -u '...' "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/org.reactivemongo"
+
+#REPO="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+REPO="https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
 
 if [ $# -lt 2 ]; then
     echo "Usage $0 version gpg-key"
@@ -66,7 +69,7 @@ for OS in $OSES; do
 done
 
 SCALA_MODULES="alias:reactivemongo-alias"
-SCALA_VERSIONS="2.11 2.12 2.13 3.4.2"
+SCALA_VERSIONS="2.11 2.12 2.13 3.6.3"
 BASES=""
 
 for M in $JAVA_MODULES; do
