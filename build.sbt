@@ -10,6 +10,8 @@ lazy val linuxX86 = Shaded.nativeModule("linux-x86_64", "epoll")
 
 lazy val linuxAarch = Shaded.nativeModule("linux-aarch_64", "epoll")
 
+val scala3Lts = "3.3.6"
+
 lazy val alias = project.in(file("alias")).
   settings(Publish.settings ++ Seq(
     name := "ReactiveMongo-Alias",
@@ -21,8 +23,8 @@ lazy val alias = project.in(file("alias")).
       Seq(
         scalaCompatVer,
         scalaVersion.value,
-        "2.13.14",
-        "3.6.3"
+        "2.13.16",
+        scala3Lts
       )
     },
     libraryDependencies ++= Seq(
