@@ -10,7 +10,7 @@ lazy val linuxX86 = Shaded.nativeModule("linux-x86_64", "epoll")
 
 lazy val linuxAarch = Shaded.nativeModule("linux-aarch_64", "epoll")
 
-val scala3Lts = "3.3.6"
+val scala3Lts = "3.3.7"
 
 lazy val alias = project.in(file("alias")).
   settings(Publish.settings ++ Seq(
