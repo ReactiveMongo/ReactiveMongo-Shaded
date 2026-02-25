@@ -93,10 +93,9 @@ jobs:
                       exit 0
                     fi
 
-                    export SBT_OPTS="-Dsbt.log.noformat=true"
-                    V=`sbt 'show version' 2>&1 | tail -n 1 | cut -d ']' -f 2 | perl -pe 's/^[ \t]+//;s/[ \t]+$//'`
+                    V=`SBT_OPTS="-Dsbt.log.noformat=true" sbt 'show version' 2>&1 | tail -n 1 | cut -d ']' -f 2 | perl -pe 's/^[ \t]+//;s/[ \t]+$//'`
 
-                    if [ `echo "$V" | grep -cE 'SNAPSHOT$' ]; then
+                    if [ `echo "$V" | grep -cE 'SNAPSHOT$'` -ne 1 ]; then
                       echo "Cannot publish release $V"
                       exit 0
                     fi
