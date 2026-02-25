@@ -93,7 +93,8 @@ jobs:
                       exit 0
                     fi
 
-                    V=`SBT_OPTS="-Dsbt.log.noformat=true" sbt 'show version' 2>&1 | tail -n 1 | cut -d ']' -f 2 | perl -pe 's/^[ \t]+//;s/[ \t]+$//'`
+                    export SBT_OPTS="-Dsbt.log.noformat=true"
+                    V=`sbt 'show version' 2>&1 | tail -n 1 | cut -d ']' -f 2 | perl -pe 's/^[ \t]+//;s/[ \t]+$//'`
 
                     if [ `echo "$V" | grep -cE 'SNAPSHOT$' ]; then
                       echo "Cannot publish release $V"
@@ -111,7 +112,7 @@ jobs:
                     
                     echo "Publishing artifacts"
                     
-                    sbt +publish
+                    sbt error +publish
 
   trigger_dependent_builds:
     docker:
