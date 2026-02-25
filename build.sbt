@@ -23,7 +23,7 @@ lazy val alias = project.in(file("alias")).
       Seq(
         scalaCompatVer,
         scalaVersion.value,
-        "2.13.17",
+        "2.13.18",
         scala3Lts
       )
     },
