@@ -1,5 +1,15 @@
 ThisBuild / organization := "org.reactivemongo"
 
+Compile / scalacOptions ++= {
+  val sv = (Compile / scalaBinaryVersion).value
+
+  if (sv == "2.11" || sv == "2.12") {
+    Seq("-target:jvm-1.8")
+  } else {
+    Seq("-release", "8")
+  }
+}
+
 lazy val common = Shaded.commonModule
 
 lazy val nativeOsxX86 = Shaded.nativeModule("osx-x86_64", "kqueue")
