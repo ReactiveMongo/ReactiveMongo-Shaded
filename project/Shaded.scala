@@ -1,17 +1,31 @@
 import sbt._
 import sbt.Keys._
 
+import sbt.ProjectExtra.projectToLocalProject
+
 import scala.xml.{ Elem => XmlElem, Node => XmlNode, NodeSeq, XML }
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
 
 import sbtassembly.{
-  AssemblyKeys, MergeStrategy, PathList, ShadeRule
+  AssemblyKeys, MergeStrategy, PathList
 }, AssemblyKeys._
+
+import com.eed3si9n.jarjarabrams.ShadeRule
+
+import xsbti.FileConverter
 
 object Shaded {
   import XmlUtil.transformPomDependencies
 
   val nettyVer = "4.2.15.Final"
+
+  type FileRef = HashedVirtualFileRef
+
+  def toFileRef(x: File)(using conv: FileConverter): FileRef =
+    conv.toVirtualFile(x.toPath())
+
+  def toFile(ref: FileRef)(using conv: FileConverter): File =
+    conv.toPath(ref).toFile()
 
   lazy val commonModule = Project("ReactiveMongo-Shaded", file("shaded")).
     settings(
@@ -23,17 +37,21 @@ object Shaded {
           "io.netty" % "netty-handler" % nettyVer,
           "io.netty" % "netty-codec-compression" % nettyVer
         ),
+        exportJars := false,
         assembly / assemblyShadeRules := Seq(
           ShadeRule.rename("io.netty.**" -> "reactivemongo.io.netty.@1").inAll
         ),
         assembly / assemblyMergeStrategy := {
           case "META-INF/io.netty.versions.properties" => MergeStrategy.last
-          case x => (assembly / assemblyMergeStrategy).value(x)
+          case "META-INF/versions/11/module-info.class" => MergeStrategy.last
+          case x =>
+            (assembly / assemblyMergeStrategy).value(x)
         },
         pomPostProcess := transformPomDependencies(_ => None),
-        makePom := makePom.dependsOn(assembly).value,
-        Compile / packageBin := target.value / (
-          assembly / assemblyJarName).value
+        makePom := Def.uncached(makePom.dependsOn(assembly).value),
+        Compile / packageBin := Def.uncached {
+          (Compile / packageBin).dependsOn(assembly).value
+        }
       )
     )
 
@@ -47,63 +65,37 @@ object Shaded {
           s"reactivemongo-shaded-native-${c}"
         },
         crossPaths := false,
+        exportJars := false,
         autoScalaLibrary := false,
         resolvers += Resolver.mavenLocal,
         libraryDependencies ++= Seq(
           (("io.netty" % s"netty-transport-native-${nettyVariant}" % nettyVer).classifier(classifier)).
             exclude("io.netty", "netty-common").
-            exclude("io.netty", "netty-transport")
+            exclude("io.netty", "netty-transport").
             exclude("io.netty", "netty-buffer")
         ),
         assembly / assemblyShadeRules := Seq(
           ShadeRule.rename("io.netty.**" -> "reactivemongo.io.netty.@1").inAll
         ),
         assembly / assemblyMergeStrategy := {
-          case "META-INF/io.netty.versions.properties" => MergeStrategy.last
+          case "META-INF/io.netty.versions.properties" |
+              "META-INF/versions/11/module-info.class" =>
+            MergeStrategy.last
+
           case x => (assembly / assemblyMergeStrategy).value(x)
         },
         pomPostProcess := transformPomDependencies(_ => None),
-        makePom := makePom.dependsOn(assembly).value,
-        Compile / packageBin := Def.task[File] {
-          val dir = baseDirectory.value / "target" / (
-            s"asm-${System.currentTimeMillis()}")
-
-          IO.unzip(assembly.value, dir)
-
-          // META-INF
-          val metaInf = dir / "META-INF"
-
-          IO.listFiles(metaInf, AllPassFilter).foreach { f =>
-            val nme = f.getName
-
-            if (nme startsWith "io.netty") {
-              f.renameTo(metaInf / s"reactivemongo.${nme}")
-            }
-          }
-
-          // Rename native libs
-          val nativeDir = metaInf / "native"
-
-          IO.listFiles(nativeDir, AllPassFilter).foreach { f =>
-            val nme = f.getName
-
-            if (nme startsWith "libnetty") {
-              f.renameTo(nativeDir / s"libreactivemongo_${nme drop 3}")
-            }
-          }
-
-          // New JAR
-          IO.zip(Path.contentOf(dir), assembly.value,
-            time = Some(System.currentTimeMillis()))
-
-          assembly.value
-        }.dependsOn(assembly).value
+        makePom := Def.uncached(makePom.dependsOn(assembly).value),
+        Compile / packageBin / skip := true,
+        Test / test := Def.task[sbt.protocol.testing.TestResult] {
+          sbt.protocol.testing.TestResult.Passed
+        }.value
       )
-    ).dependsOn(commonModule % Provided)
+    ).dependsOn(ClasspathDep.ClasspathDependency(commonModule, Some("provided")))
 }
 
 object XmlUtil {
-  def transformPomDependencies(tx: XmlElem => Option[XmlNode]): XmlNode => XmlNode = { node: XmlNode =>
+  def transformPomDependencies(tx: XmlElem => Option[XmlNode]): XmlNode => XmlNode = { (node: XmlNode) =>
     val tr = new RuleTransformer(new RewriteRule {
       override def transform(node: XmlNode): NodeSeq = node match {
         case e: XmlElem if e.label == "dependency" => tx(e) match {
