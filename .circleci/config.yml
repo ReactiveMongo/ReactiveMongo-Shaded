@@ -6,7 +6,7 @@ commands:
     parameters:
       sbt_version:
         type: string
-        default: "1.11.4"
+        default: "2.0.1"
     steps:
       - restore_cache:
           keys:
@@ -49,9 +49,9 @@ commands:
           key: *scala_cache_key
 
 jobs:
-  jdk8:
+  jdk26:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: cimg/openjdk:26.0
 
     working_directory: ~/repo
 
@@ -62,7 +62,7 @@ jobs:
 
   publish_snapshots:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: cimg/openjdk:26.0
 
     working_directory: ~/repo
 
@@ -130,7 +130,7 @@ workflows:
 
   main_suite:
     jobs:
-      - jdk8
+      - jdk26
 
       - publish_snapshots:
           filters:
@@ -138,7 +138,7 @@ workflows:
               only:
                 - master
           requires:
-            - jdk8
+            - jdk26
 
       - trigger_dependent_builds:
           filters:
