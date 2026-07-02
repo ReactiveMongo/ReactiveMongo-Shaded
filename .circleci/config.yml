@@ -108,8 +108,8 @@ jobs:
 
                     V=$(sbt --server 'show version' 2>&1 | sed 's/\x1b\[0[Jm]//g' | grep --color=never '[0-9]\+\.[0-9]\+' | tail -1 | sed 's/\[info\]//' | xargs | tr -cd '[:alnum:]._-')
 
-                    if [ `echo "$V" | grep -cE 'SNAPSHOT$'` -ne 1 ]; then
-                      echo "Cannot publish release $V"
+                    if [[ "$V" != *SNAPSHOT* ]]; then
+                      echo "Skip non snapshot: $V"
                       exit 0
                     fi
                     
