@@ -1,8 +1,6 @@
 import sbt._
 import sbt.Keys._
 
-import sbt.ProjectExtra.projectToLocalProject
-
 import scala.xml.{ Elem => XmlElem, Node => XmlNode, NodeSeq, XML }
 import scala.xml.transform.{ RewriteRule, RuleTransformer }
 
@@ -93,7 +91,7 @@ object Shaded {
           sbt.protocol.testing.TestResult.Passed
         }.value
       )
-    ).dependsOn(ClasspathDep.ClasspathDependency(commonModule, Some("provided")))
+    ).dependsOn(sbt.projectToLocalProject(commonModule) % "provided")
 }
 
 object XmlUtil {
