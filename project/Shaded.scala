@@ -50,7 +50,7 @@ object Shaded {
         pomPostProcess := transformPomDependencies(_ => None),
         makePom := Def.uncached(makePom.dependsOn(assembly).value),
         Compile / packageBin := Def.uncached {
-          (Compile / packageBin).dependsOn(assembly).value
+          assembly.value
         }
       )
     )
@@ -86,7 +86,9 @@ object Shaded {
         },
         pomPostProcess := transformPomDependencies(_ => None),
         makePom := Def.uncached(makePom.dependsOn(assembly).value),
-        Compile / packageBin / skip := true,
+        Compile / packageBin := Def.uncached {
+          assembly.value
+        },
         Test / test := Def.task[sbt.protocol.testing.TestResult] {
           sbt.protocol.testing.TestResult.Passed
         }.value
