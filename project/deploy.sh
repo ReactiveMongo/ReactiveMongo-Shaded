@@ -2,7 +2,7 @@
 
 set -e
 
-# curl -D - -X POST -u '...' "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/org.reactivemongo"
+# curl -D - -X POST -u "$SONATYPE_USERNAME:$SONATYPE_PASSWORD" "https://ossrh-staging-api.central.sonatype.com/manual/upload/defaultRepository/org.reactivemongo"
 
 #REPO="https://oss.sonatype.org/service/local/staging/deploy/maven2/"
 REPO="https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/"
@@ -11,9 +11,6 @@ if [ $# -lt 2 ]; then
     echo "Usage $0 version gpg-key"
     exit 1
 fi
-
-#echo "Check the project version"
-#VERSION=`sbt ';project ReactiveMongo ;show version' 2>&1 | tail -n 1 | cut -d ' ' -f 2 | sed -e 's/^.*([0-9.]*).*$/$1/'`
 
 VERSION="$1"
 KEY="$2"
@@ -35,62 +32,58 @@ expect eof
 EOF
 }
 
-if [ ! -f "shaded/target/reactivemongo-shaded-$VERSION.jar" ]; then
-  mv "shaded/target/ReactiveMongo-Shaded-Assembly-$VERSION.jar" "shaded/target/reactivemongo-shaded-$VERSION.jar"
+RT="target/out/jvm/u"
+
+if [ ! -f "$RT/reactivemongo-shaded/reactivemongo-shaded-$VERSION.jar" ]; then
+  mv "$RT/reactivemongo-shaded/ReactiveMongo-Shaded-assembly-$VERSION.jar" "$RT/reactivemongo-shaded/reactivemongo-shaded-$VERSION.jar"
 fi
 
 OSES="osx linux"
-ARCHES="x86_64 aarch_64"
+ARCHES="x86-64 aarch-64"
 
 for OS in $OSES; do
   for ARCH in $ARCHES; do
-    A=`echo "$ARCH" | sed -e 's/_/-/'`
-    P="shaded-native-${OS}-${A}"
-    TARGET="shaded-native-${OS}-${ARCH}/target"
+    P="shaded-native-${OS}-${ARCH}"
+    TARGET="${RT}/reactivemongo-shaded-native-${OS}-${ARCH}"
     JAR="${TARGET}/reactivemongo-$P-$VERSION.jar"
     ASM="$TARGET/reactivemongo-${P}-assembly-$VERSION.jar"
 
     if [ -r "$ASM" ]; then
-      mv "$ASM" "$JAR"
+      cp "$ASM" "$JAR"
     fi
   done
 done
 
-JAVA_MODULES="shaded:reactivemongo-shaded"
+JAVA_MODULES="reactivemongo-shaded"
 
 for OS in $OSES; do
   for ARCH in $ARCHES; do
     S="${OS}-${ARCH}"
-    A=`echo "$ARCH" | sed -e 's/_/-/'`
-    V="${OS}-${A}"
     
-    JAVA_MODULES="$JAVA_MODULES shaded-native-${S}:reactivemongo-shaded-native-${V}"
+    JAVA_MODULES="$JAVA_MODULES reactivemongo-shaded-native-${S}"
   done
 done
 
-SCALA_MODULES="alias:reactivemongo-alias"
-SCALA_VERSIONS="2.11 2.12 2.13 3.3.7"
+SCALA_MODULES="reactivemongo-alias"
+SCALA_VERSIONS="2.11 2.12 2.13 3.3.8"
 BASES=""
 
-for M in $JAVA_MODULES; do
-  B=`echo "$M" | cut -d ':' -f 1`
-  N=`echo "$M" | cut -d ':' -f 2`
+RT="target/out/jvm/u/"
 
-  BASES="$BASES $B/target/$N-$VERSION"
+for M in $JAVA_MODULES; do
+  BASES="$BASES $RT/$M/$M-$VERSION"
 done
 
 for V in $SCALA_VERSIONS; do
-    MV=`echo "$V" | sed -e 's/^3.*/3/'`
+    MV="${V/#3*/3}"
 
     for M in $SCALA_MODULES; do
-        B=`echo "$M" | cut -d ':' -f 1`
-        SCALA_DIR="$B/target/scala-$V"
+        SCALA_DIR=(target/out/jvm/scala-${V}*/$M)
 
         if [ ! -d "$SCALA_DIR" ]; then
-            echo "Skip Scala version $V for $M"
+            echo "Skip Scala version $V for $M: $SCALA_DIR"
         else
-            N=`echo "$M" | cut -d ':' -f 2`
-            BASES="$BASES $SCALA_DIR/$N"_$MV-$VERSION
+            BASES="$BASES $SCALA_DIR/$M"_$MV-$VERSION
         fi
     done
 done
