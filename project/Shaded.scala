@@ -85,6 +85,40 @@ object Shaded {
         pomPostProcess := transformPomDependencies(_ => None),
         makePom := Def.uncached(makePom.dependsOn(assembly).value),
         Compile / packageBin := Def.uncached {
+          val dir = baseDirectory.value / "target" / (
+            s"asm-${System.currentTimeMillis()}")
+
+          val conv: xsbti.FileConverter = fileConverter.value
+
+          val asm = conv.toPath(assembly.value).toFile()
+
+          IO.unzip(asm, dir)
+
+          // META-INF
+          val metaInf = dir / "META-INF"
+
+          IO.listFiles(metaInf, AllPassFilter).foreach { f =>
+            val nme = f.getName
+
+            if (nme.startsWith("io.netty")) {
+              f.renameTo(metaInf / s"reactivemongo.${nme}")
+            }
+          }
+
+          // Rename native libs
+          val nativeDir = metaInf / "native"
+
+          IO.listFiles(nativeDir, AllPassFilter).foreach { f =>
+            val nme = f.getName
+
+            if (nme.startsWith("libnetty")) {
+              f.renameTo(nativeDir / s"libreactivemongo_${nme drop 3}")
+            }
+          }
+
+          // New JAR
+          IO.zip(Path.contentOf(dir), asm, time = Some(System.currentTimeMillis()))
+
           assembly.value
         },
         Test / test := Def.task[sbt.protocol.testing.TestResult] {
