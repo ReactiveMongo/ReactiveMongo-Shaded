@@ -6,7 +6,7 @@ Compile / scalacOptions ++= {
   if (sv == "2.11" || sv == "2.12") {
     Seq("-target:jvm-1.8")
   } else {
-    Seq("--release", "8")
+    Seq("-release", "8")
   }
 }
 
