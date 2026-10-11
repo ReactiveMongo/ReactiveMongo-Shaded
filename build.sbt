@@ -37,6 +37,19 @@ lazy val alias = project.in(file("alias")).
         scala3Lts
       )
     },
+    assembly / assemblyMergeStrategy := {
+      case "rootdoc.txt" | "library.properties" =>
+          MergeStrategy.discard
+
+      case path if ((path.startsWith("scala/") && (
+        path.endsWith(".class") || path.endsWith(".tasty"))) ||
+          path.contains("scala-library")
+      ) =>
+        MergeStrategy.discard
+
+      case path =>
+        (assembly / assemblyMergeStrategy).value(path)
+    },
     libraryDependencies ++= Seq(
       "io.netty" % "netty-handler" % Shaded.nettyVer % Provided,
       "io.netty" % "netty-codec-compression" % Shaded.nettyVer % Provided,
@@ -44,6 +57,7 @@ lazy val alias = project.in(file("alias")).
   )
 
 lazy val shaded = project.in(file(".")).
+  disablePlugins(AssemblyPlugin).
   settings(
     publishArtifact := false,
     publishTo := None,
