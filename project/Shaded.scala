@@ -15,7 +15,7 @@ import xsbti.FileConverter
 object Shaded {
   import XmlUtil.transformPomDependencies
 
-  val nettyVer = "4.2.19.Final"
+  val nettyVer = "4.2.20.Final"
 
   type FileRef = HashedVirtualFileRef
 
